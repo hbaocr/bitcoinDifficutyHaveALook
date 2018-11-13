@@ -114,5 +114,5 @@ async function InvestigateBtcAsync(start_height, end_height, step_jump = 1) {
 
     }
 }
-InvestigateBtcAsync(0, 100000, 100);
+InvestigateBtcAsync(0, 200000, 200);
 //InvestigateBTC(0,5000);
