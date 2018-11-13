@@ -1,6 +1,5 @@
 
 var fs = require('fs');
-var sleep = require('system-sleep');
 var request = require("request-promise");
 var BTCDifficultyDiscover = require('./BTCDifficultyDiscover');
 
@@ -113,20 +112,22 @@ async function InvestigateBtcAsync(start_height, end_height, step_jump = 1) {
     let headline = "height,fee,numberTXs,nTime,date_str,nonce,nbits,nDifficulty,average_hash_calcualtions,blockhash,targetHash" + "\n";
 
     fs.appendFileSync(fname, headline);
-
-    for (let i = start_height; i < end_height; i += step_jump) {
+    let dly=100;
+    for (let i = start_height; i < end_height;) {
         try {
-            //await Promise.reject('bad');
+            await promiseTimeout(dly);
             var block_obj = await getblockbyheight(i, progress_cb);
-            await promiseTimeout(500);
             var block_info = block_obj.blocks[0];
             let inf = parse_block(block_info);
             fs.appendFileSync(fname, inf + "\n");
+            dly=100;
+            i += step_jump;
         } catch (err) {
+            dly=1000;//if err ==> delay more
             console.log("err");
         }
 
     }
 }
-InvestigateBtcAsync(0, 400000, 250);
+InvestigateBtcAsync(0, 400100, 10);
 //InvestigateBTC(0,5000);
