@@ -9,13 +9,14 @@ function getblockbyheight(block_height, promise_progress_cb = {}) {
     let api_get_block_by_height = 'https://blockchain.info/block-height/' + block_height + '?format=json';
     return new Promise(function (resolve, reject) {
         request(api_get_block_by_height, { json: true }, (err, res, body) => {
-            if (promise_progress_cb) {
-                promise_progress_cb(); //use
-            }
+           
             if (err) {
                 // console.log(err);
                 reject(err);
             } else {
+                if (promise_progress_cb) {
+                    promise_progress_cb(); //use
+                }
                 resolve(body);
             }
         });
