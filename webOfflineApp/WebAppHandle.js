@@ -9,7 +9,7 @@
 // For display
 var displayChart;// to handle chartGUI
 var chartObj;// variable to handle data in chart
-
+var toolTipData=[];
 //======Data CSV==========
 
 var parserhdl;
@@ -76,7 +76,25 @@ To get a fixed height and variable width chart…
 3. set chart options to include maintainAspectRatio: false,
 */
 function create_chartjs_obj(){
+
+    let tooltipHdl= {
+        callbacks: {
+            label: function(tooltipItem, data) {
+                let idx =tooltipItem.datasetIndex;
+                var label = data.datasets[idx].label +'= '+tooltipItem.yLabel|| '';
+
+                if (label) {
+                    label += ' @ ';
+                }
+                if(toolTipData[idx]){
+                    label += toolTipData[idx];
+                }
+                return label;
+            }
+        }
+    }
    let optionCfg= {
+        tooltips:tooltipHdl,
         responsive: true,
         hoverMode: 'index',
         maintainAspectRatio: false,//fixed height
@@ -102,6 +120,11 @@ function create_chartjs_obj(){
     lineChartData.datasets.push(line1.datset);//add new line
     optionCfg.scales.yAxes.push(line1.yAxiz);//add config for line0
 
+    let line3= create_line_template('blocktimes','blockstime_sec',chartColors.green);
+    lineChartData.datasets.push(line3.datset);//add new line
+    optionCfg.scales.yAxes.push(line3.yAxiz);//add config for line0
+
+
     let chartjs_Obj={
         data:lineChartData,
         options:optionCfg
@@ -116,15 +139,29 @@ function update_data(chartObj){
     return chartObj;
 }
 
+var last_utc_recs=0; 
 function update_chart_data(chartObj,chunks){
     for(let i=0;i<chunks.length;i++){
         let xdata = parseInt(chunks[i].height);
         let y1data =parseInt(chunks[i].average_hash_calcualtions);
         let y2data =parseInt(chunks[i].numberTXs);
+        let gmtime=chunks[i].date_str;
+        
+        let y3data=600;
+        let ntime =parseInt(chunks[i].nTime);
+        if(last_utc_recs!=0){
+            y3data=ntime-last_utc_recs;
+            if(y3data>1231006000){
+                y3data=600;
+            }
+        }
+        last_utc_recs=ntime;
 
         chartObj.data.labels.push(xdata);
         chartObj.data.datasets[0].data.push(y1data);
         chartObj.data.datasets[1].data.push(y2data);
+        chartObj.data.datasets[2].data.push(y3data);
+        toolTipData.push(gmtime);
     }
     displayChart.update(); 
     return chartObj;
