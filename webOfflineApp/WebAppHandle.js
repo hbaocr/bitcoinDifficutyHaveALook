@@ -80,8 +80,9 @@ function create_chartjs_obj(){
     let tooltipHdl= {
         callbacks: {
             label: function(tooltipItem, data) {
-                let idx =tooltipItem.datasetIndex;
-                var label = data.datasets[idx].label +'= '+tooltipItem.yLabel|| '';
+                let dataset_idx =tooltipItem.datasetIndex;
+                let idx=tooltipItem.index;
+                var label = data.datasets[dataset_idx].label +'= '+tooltipItem.yLabel|| '';
 
                 if (label) {
                     label += ' @ ';
