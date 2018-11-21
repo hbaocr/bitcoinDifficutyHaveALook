@@ -140,7 +140,7 @@ class ChartHandle {
 
     insertDataToChartCb(chunks) {
         let dh = 1;
-        let last_utc_recs = this.last_utc_recs;
+         //this.last_utc_recs;
         let chartObj=this.chartObj;
         let toolTipData = this.toolTipData;
 
@@ -155,14 +155,14 @@ class ChartHandle {
             
             let y3data=600;
             let ntime =parseInt(chunks[i].nTime);
-            if(last_utc_recs!=0){
-                y3data=ntime-last_utc_recs;
+            if(this.last_utc_recs!=0){
+                y3data=ntime-this.last_utc_recs;
                 if(y3data>1231006000){
                     y3data=600;
                 }
             }
           
-            last_utc_recs=ntime;
+            this.last_utc_recs=ntime;
             chartObj.data.labels.push(xdata);
             chartObj.data.datasets[0].data.push(y1data);
             chartObj.data.datasets[1].data.push(y2data);
