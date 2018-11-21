@@ -41,7 +41,7 @@ function parse_block(block_obj) {
 }
 
 //https://chain.api.btc.com/v3/block/4,5,6,7,8
-var getBCHBlockInfo = function (start, step, numblocks) {
+var getBTCBlockInfo = function (start, step, numblocks) {
     var api_endpoint = "https://chain.api.btc.com/v3/block/";
     let info = "";
     if (numblocks > 50) {
@@ -72,7 +72,6 @@ var getBCHBlockInfo = function (start, step, numblocks) {
 
 }
 
-//getBCHBlockInfo(10,10,10)
 async function InvestigateBTCAsync(start_height, end_height, step_jump = 1) {
 
     let fname = 'BCH_' + start_height + '_' + end_height + '.csv';
@@ -89,7 +88,7 @@ async function InvestigateBTCAsync(start_height, end_height, step_jump = 1) {
     while (idx < end_height) {
         try {
             await promiseTimeout(dly);
-            let res = await getBCHBlockInfo(idx, step_jump, 50);
+            let res = await getBTCBlockInfo(idx, step_jump, 50);
             dly = 1000;
             if (res.data) {
                 idx = idx + (res.data.length) * step_jump;
@@ -110,7 +109,7 @@ async function InvestigateBTCAsync(start_height, end_height, step_jump = 1) {
 
 async function ContinueInvestigateBCHAsync(start_height, end_height, step_jump = 1,check_point=0) {
 
-    let fname = 'BCH_' + start_height + '_' + end_height + '.csv';
+    let fname = 'BTC_' + start_height + '_' + end_height + '.csv';
 
     if (fs.existsSync(fname)) {
         if(check_point==0){
@@ -129,7 +128,7 @@ async function ContinueInvestigateBCHAsync(start_height, end_height, step_jump =
     while (idx < end_height) {
         try {
             await promiseTimeout(dly);
-            let res = await getBCHBlockInfo(idx, step_jump, 50);
+            let res = await getBTCBlockInfo(idx, step_jump, 50);
             dly = 1000;
             if (res.data) {
                 idx = idx + (res.data.length) * step_jump;
@@ -147,7 +146,7 @@ async function ContinueInvestigateBCHAsync(start_height, end_height, step_jump =
         }
     }
 }
-let ee = 557555;
+let ee = 500000;
 let ss = ee- 3000;
 let step =1;
 InvestigateBTCAsync(ss, ee, step);
