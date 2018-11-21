@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+
+<head>
+    <script src="papaparse.min.js"></script>
+    <script src="Chart.bundle.js"></script>
+    <script src="btcChartWraper.js"></script>
+    <script src="btcPapaWraper.js"></script>
+    <script src="index.js"></script>
+
+
+</head>
+
+<body>
+    <div>
+        <input type="file" id="csvFileUpload" />
+        <input type="button" id="upload" value="DrawTheChart" onclick="uploadCSV()" accept=".csv" />
+        <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+    <div>
+
+        <input type="file" id="csvFileUpload2" />
+        <input type="button" id="upload" value="DrawTheChart" onclick="uploadCSV2()" accept=".csv" />
+        <canvas id="myChart2" width="400" height="400"></canvas>
+    </div>
+
+</body>
+
+</html>
