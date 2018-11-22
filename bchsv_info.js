@@ -15,9 +15,9 @@ function getblockbyheight(block_height, promise_progress_cb = {}) {
                 // console.log(err);
                 reject(err);
             } else {
-                if (promise_progress_cb) {
-                    promise_progress_cb(); //use
-                }
+                // if (promise_progress_cb) {
+                //     promise_progress_cb(); //use
+                // }
                 resolve(body);
             }
         });
@@ -32,7 +32,7 @@ var init_progres_cb = function (init_cnt, step) {
 var progress_cb = function () {
     progress_cnt -= jstep;
     if (progress_cnt == 0) progress_cnt = 0;
-    console.log('----> remain records ', progress_cnt);
+    console.log('BSV----> remain records ', progress_cnt);
 }
 
 function parse_block(block_obj) {
@@ -72,7 +72,7 @@ function promiseTimeout(time) {
 
 async function InvestigateBCH_SV_Async(start_height, end_height, step_jump = 1,check_point=0) {
 
-    let fname = 'BCH_SV_' + start_height + '_' + end_height + '.csv';
+    let fname = 'BSV_' + start_height + '_' + end_height + '.csv';
     if (fs.existsSync(fname)) {
         if(check_point==0){
             fs.unlinkSync(fname);
@@ -94,22 +94,28 @@ async function InvestigateBCH_SV_Async(start_height, end_height, step_jump = 1,c
     for (let i = start_height; i < end_height;) {
         try {
             await promiseTimeout(dly);
-            var block_obj = await getblockbyheight(i, progress_cb);
+            var block_obj = await getblockbyheight(i);
             //var block_info = block_obj.blocks[0];
-            let inf = parse_block(block_obj.block);
-            fs.appendFileSync(fname, inf + "\n");
-            dly=100;
-            i += step_jump;
+            if(block_obj.block){
+                let inf = parse_block(block_obj.block);
+                fs.appendFileSync(fname, inf + "\n");
+                progress_cb();
+                dly=100;
+                i += step_jump;
+            }
+           
         } catch (err) {
-            dly=1000;//if err ==> delay more
+            dly += 1000;//if err ==> delay more
             console.log("err");
         }
 
     }
 }
 
-let ee = 557555;
-let ss = ee- 3000;
-let step =1;
-InvestigateBCH_SV_Async(ss, ee, step);
+// let ee = 557588;
+// let ss = ee - 900;
+// let step =1;
+// InvestigateBCH_SV_Async(ss, ee, step);
+
+module.exports.InvestigateBCH_SV_Async=InvestigateBCH_SV_Async;
 //InvestigateBTC(0,5000);

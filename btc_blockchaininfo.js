@@ -1,5 +1,3 @@
-//https://bch-bitcore2.trezor.io/api/block/1
-
 var fs = require('fs');
 var request = require("request-promise");
 var BTCDifficultyDiscover = require('./BTCDifficultyDiscover');
@@ -7,7 +5,7 @@ var BTCDifficultyDiscover = require('./BTCDifficultyDiscover');
 const btcDiff = new BTCDifficultyDiscover();
 
 function getblockbyheight(block_height, promise_progress_cb = {}) {
-    let api_get_block_by_height = 'https://bch-bitcore2.trezor.io/api/block/'+block_height;
+    let api_get_block_by_height = 'https://blockchain.info/block-height/' + block_height + '?format=json';
     return new Promise(function (resolve, reject) {
         request(api_get_block_by_height, { json: true }, (err, res, body) => {
            
@@ -32,7 +30,7 @@ var init_progres_cb = function (init_cnt, step) {
 var progress_cb = function () {
     progress_cnt -= jstep;
     if (progress_cnt == 0) progress_cnt = 0;
-    console.log('BCH----> remain records ', progress_cnt);
+    console.log('----> remain records ', progress_cnt);
 }
 
 function parse_block(block_obj) {
@@ -46,8 +44,8 @@ function parse_block(block_obj) {
     let theDate = new Date(utc_stamp);
     let dateString = theDate.toGMTString().replace(",", "");
 
-    let fee = -1;
-    let number_of_tx = block_obj.TxCount;
+    let fee = block_obj.fee;
+    let number_of_tx = block_obj.n_tx;
 
     let info = '';
     info = info + block_obj.height + ',';
@@ -70,16 +68,11 @@ function promiseTimeout(time) {
     });
 };
 
-async function InvestigateBCHAsync(start_height, end_height, step_jump = 1,check_point=0) {
+async function InvestigateBtcAsync(start_height, end_height, step_jump = 1) {
 
-    let fname = 'BCH_trezor_' + start_height + '_' + end_height + '.csv';
+    let fname = 'investigate_' + start_height + '_' + end_height + '.csv';
     if (fs.existsSync(fname)) {
-        if(check_point==0){
-            fs.unlinkSync(fname);
-        }else{
-            start_height=check_point;
-        }
-       
+        fs.unlinkSync(fname);
     }
 
     let init_cnt = end_height - start_height;
@@ -93,8 +86,8 @@ async function InvestigateBCHAsync(start_height, end_height, step_jump = 1,check
         try {
             await promiseTimeout(dly);
             var block_obj = await getblockbyheight(i, progress_cb);
-            //var block_info = block_obj.blocks[0];
-            let inf = parse_block(block_obj);
+            var block_info = block_obj.blocks[0];
+            let inf = parse_block(block_info);
             fs.appendFileSync(fname, inf + "\n");
             dly=100;
             i += step_jump;
@@ -105,10 +98,5 @@ async function InvestigateBCHAsync(start_height, end_height, step_jump = 1,check
 
     }
 }
-// let ee = 557588;
-// let ss = ee - 900;
-// let step =1;
-
-// InvestigateBCHAsync(ss, ee, step);
-
-module.exports.InvestigateBCHAsync =InvestigateBCHAsync;
+module.exports.InvestigateBtcAsync =InvestigateBtcAsync;
+//InvestigateBtcAsync(0, 400100, 10);
